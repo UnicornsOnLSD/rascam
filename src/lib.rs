@@ -1248,9 +1248,13 @@ impl SimpleCamera {
         let camera = &mut self.serious;
 
         // camera.destroy_encoder()?;
-        unsafe {
-            ffi::mmal_port_disconnect(camera.as_ref().control);
-        }
+        // unsafe {
+        //     ffi::mmal_port_disconnect(camera.camera.as_ref().control);
+        //     ffi::mmal_port_disconnect(camera.camera.as_ref().output.offset(0));
+        //     ffi::mmal
+        // }
+
+        unsafe { ffi::mmal_component_destroy(camera.camera) }
     }
 }
 
