@@ -948,7 +948,7 @@ impl SeriousCamera {
     }
 
     pub fn take_async(
-        &mut self,
+        &mut self, iso: u32
     ) -> Result<futures::channel::mpsc::Receiver<BufferGuard>, CameraError> {
         unsafe {
             self.mutex.raw().lock();
@@ -961,7 +961,7 @@ impl SeriousCamera {
             unsafe { mutex.force_unlock() };
         }}
 
-        self.do_take(&mut buffer_port_ptr, true)
+        self.do_take(&mut buffer_port_ptr, true, iso)
             .map_err(|e| {
                 unsafe {
                     if buffer_port_ptr != ptr::null_mut()
