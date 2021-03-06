@@ -1230,7 +1230,7 @@ impl SimpleCamera {
     
     pub fn drop(&mut self) {
         let camera = &mut self.serious;
-        camera.drop();
+        drop(camera);
     }
 }
 
