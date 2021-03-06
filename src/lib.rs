@@ -246,6 +246,23 @@ impl SeriousCamera {
         }
     }
 
+    pub fn destroy_encoder(&mut self) -> Result<(), CameraError> {
+        unsafe {
+            let mut encoder_ptr = self.encoder.unwrap();
+            let component: *const c_char =
+                ffi::MMAL_COMPONENT_DEFAULT_IMAGE_ENCODER.as_ptr() as *const c_char;
+            let status = ffi::mmal_component_destroy(encoder_ptr.as_mut_ptr());
+            match status {
+                MMAL_STATUS_T::MMAL_SUCCESS => {
+                    self.encoder = None();
+                    self.encoder_created = false;
+                    Ok(())
+                }
+                s => Err(MmalError::with_status("Unable to destroy encoder".to_owned(), s).into()),
+            }
+        }
+    }
+
     pub fn connect_encoder(&mut self) -> Result<(), CameraError> {
         unsafe {
             let mut connection_ptr = MaybeUninit::uninit();
@@ -372,6 +389,7 @@ impl SeriousCamera {
             cfg.fast_preview_resume = 0;
             cfg.use_stc_timestamp = ffi::MMAL_PARAMETER_CAMERA_CONFIG_TIMESTAMP_MODE_T::MMAL_PARAM_TIMESTAMP_MODE_RESET_STC;
 
+            ffi::mmal_port_disconnect(self.camera.as_ref().control);
             let status = ffi::mmal_port_parameter_set(self.camera.as_ref().control, &cfg.hdr);
             match status {
                 MMAL_STATUS_T::MMAL_SUCCESS => Ok(()),
@@ -1217,20 +1235,22 @@ impl SimpleCamera {
     pub async fn take_one_async(&mut self) -> Result<Vec<u8>, CameraError> {
         let receiver = self.serious.take_async()?;
         let future = receiver
-            .fold(Vec::new(), |mut acc, buf| {
-                async move {
-                    acc.extend(buf.get_bytes());
-                    acc
-                }
+            .fold(Vec::new(), |mut acc, buf| async move {
+                acc.extend(buf.get_bytes());
+                acc
             })
             .map(Ok);
 
         future.await
     }
-    
-    pub fn drop(&mut self) {
+
+    pub fn deactivate(&mut self) {
         let camera = &mut self.serious;
-        drop(camera);
+
+        // camera.destroy_encoder()?;
+        unsafe {
+            ffi::mmal_port_disconnect(camera.as_ref().control);
+        }
     }
 }
 
