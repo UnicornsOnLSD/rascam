@@ -1208,6 +1208,7 @@ impl SimpleCamera {
         let receiver = self.serious.take()?;
 
         loop {
+            println!("in take_one_writer loop!");
             let result = receiver.recv()?;
             match result {
                 Some(buf) => {
