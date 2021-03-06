@@ -1210,6 +1210,7 @@ impl SimpleCamera {
         loop {
             println!("in take_one_writer loop!");
             let result = receiver.recv()?;
+            println!("got reciever!");
             match result {
                 Some(buf) => {
                     writer.write_all(buf.get_bytes())?;
