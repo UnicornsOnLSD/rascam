@@ -1217,7 +1217,7 @@ impl SimpleCamera {
     ///
     /// If there is an error
     pub fn take_one_writer(&mut self, writer: &mut dyn Write) -> Result<(), CameraError> {
-        let iso = self.settings.unwrap().iso;
+        let iso = self.settings.as_ref().unwrap().iso;
         let receiver = self.serious.take(iso)?;
 
         loop {
@@ -1251,7 +1251,7 @@ impl SimpleCamera {
     ///
     /// Returns a future result where `Ok` contains a `Vec<u8>` containing the bytes of the image.
     pub async fn take_one_async(&mut self) -> Result<Vec<u8>, CameraError> {
-        let iso = self.settings.unwrap().iso;
+        let iso = self.settings.as_ref().unwrap().iso;
         let receiver = self.serious.take_async(iso)?;
         let future = receiver
             .fold(Vec::new(), |mut acc, buf| async move {
