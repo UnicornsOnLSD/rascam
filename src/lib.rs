@@ -1254,7 +1254,9 @@ impl SimpleCamera {
         //     ffi::mmal
         // }
 
-        unsafe { ffi::mmal_component_destroy(camera.camera) }
+        unsafe {
+            ffi::mmal_component_destroy(camera.camera);
+        }
     }
 }
 
