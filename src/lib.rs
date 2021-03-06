@@ -1109,6 +1109,9 @@ impl Drop for SeriousCamera {
                 println!("port disabled");
             }
 
+            ffi::mmal_component_disable(self.preview.unwrap().as_ptr());
+            ffi::mmal_component_destroy(self.preview.unwrap().as_ptr());
+
             ffi::mmal_component_destroy(self.camera.as_ptr());
             #[cfg(feature = "debug")]
             println!("camera destroyed");
