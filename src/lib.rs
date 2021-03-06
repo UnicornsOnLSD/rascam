@@ -824,6 +824,7 @@ impl SeriousCamera {
         &mut self,
         buffer_port_ptr: &mut *mut ffi::MMAL_PORT_T,
         is_async: bool,
+        iso: u32,
     ) -> Result<ReceiverKind, CameraError> {
         unsafe {
             let mut status = ffi::mmal_port_parameter_set_uint32(
@@ -835,6 +836,16 @@ impl SeriousCamera {
             if status != ffi::MMAL_STATUS_T::MMAL_SUCCESS {
                 return Err(MmalError::with_status(
                     "Unable to set shutter speed".to_owned(),
+                    status,
+                )
+                .into());
+            }
+
+            status = ffi::mmal_port_parameter_set_uint32(self.camera.as_ref().control, ffi::MMAL_PARAMETER_ISO as u32, iso);
+
+            if status != ffi::MMAL_STATUS_T::MMAL_SUCCESS {
+                return Err(MmalError::with_status(
+                    "Unable to set ISO".to_owned(),
                     status,
                 )
                 .into());
@@ -908,7 +919,7 @@ impl SeriousCamera {
         }
     }
 
-    pub fn take(&mut self) -> Result<mpsc::Receiver<Option<BufferGuard>>, CameraError> {
+    pub fn take(&mut self, iso: u32) -> Result<mpsc::Receiver<Option<BufferGuard>>, CameraError> {
         unsafe {
             self.mutex.raw().lock();
         }
@@ -920,7 +931,7 @@ impl SeriousCamera {
             unsafe { mutex.force_unlock() };
         }}
 
-        self.do_take(&mut buffer_port_ptr, false)
+        self.do_take(&mut buffer_port_ptr, false, iso)
             .map_err(|e| {
                 unsafe {
                     if !buffer_port_ptr.is_null() && !(*buffer_port_ptr).userdata.is_null() {
@@ -1205,7 +1216,7 @@ impl SimpleCamera {
     ///
     /// If there is an error
     pub fn take_one_writer(&mut self, writer: &mut dyn Write) -> Result<(), CameraError> {
-        let receiver = self.serious.take()?;
+        let receiver = self.serious.take(iso: self.settings.unwrap().iso)?;
 
         loop {
             println!("in take_one_writer loop!");
