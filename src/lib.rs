@@ -1245,7 +1245,7 @@ impl SimpleCamera {
     }
 
     pub fn deactivate(&mut self) {
-        let camera = self.serious;
+        let camera = &mut self.serious;
 
         // camera.destroy_encoder()?;
         // unsafe {
