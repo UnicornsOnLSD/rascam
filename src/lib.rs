@@ -246,22 +246,22 @@ impl SeriousCamera {
         }
     }
 
-    pub fn destroy_encoder(&mut self) -> Result<(), CameraError> {
-        unsafe {
-            let mut encoder_ptr = self.encoder.unwrap();
-            let component: *const c_char =
-                ffi::MMAL_COMPONENT_DEFAULT_IMAGE_ENCODER.as_ptr() as *const c_char;
-            let status = ffi::mmal_component_destroy(encoder_ptr.as_mut_ptr());
-            match status {
-                MMAL_STATUS_T::MMAL_SUCCESS => {
-                    self.encoder = None();
-                    self.encoder_created = false;
-                    Ok(())
-                }
-                s => Err(MmalError::with_status("Unable to destroy encoder".to_owned(), s).into()),
-            }
-        }
-    }
+    // pub fn destroy_encoder(&mut self) -> Result<(), CameraError> {
+    //     unsafe {
+    //         let mut encoder_ptr = self.encoder.unwrap();
+    //         let component: *const c_char =
+    //             ffi::MMAL_COMPONENT_DEFAULT_IMAGE_ENCODER.as_ptr() as *const c_char;
+    //         let status = ffi::mmal_component_destroy(encoder_ptr.as_mut_ptr());
+    //         match status {
+    //             MMAL_STATUS_T::MMAL_SUCCESS => {
+    //                 self.encoder = None();
+    //                 self.encoder_created = false;
+    //                 Ok(())
+    //             }
+    //             s => Err(MmalError::with_status("Unable to destroy encoder".to_owned(), s).into()),
+    //         }
+    //     }
+    // }
 
     pub fn connect_encoder(&mut self) -> Result<(), CameraError> {
         unsafe {
