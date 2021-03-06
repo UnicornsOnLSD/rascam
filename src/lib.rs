@@ -1184,7 +1184,9 @@ impl SimpleCamera {
         let camera = &mut self.serious;
         let settings = self.settings.as_ref().unwrap();
         
+        println!("Setting camera num");
         camera.set_camera_num(0)?;
+        println!("Setting camera format");
         camera.set_camera_format(settings)
     }
 
