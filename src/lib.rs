@@ -841,14 +841,14 @@ impl SeriousCamera {
                 .into());
             }
 
-            status = ffi::mmal_port_parameter_set_uint32(self.camera.as_ref().control, ffi::MMAL_PARAMETER_ISO as u32, iso);
+            status = ffi::mmal_port_parameter_set_uint32(
+                self.camera.as_ref().control,
+                ffi::MMAL_PARAMETER_ISO as u32,
+                iso,
+            );
 
             if status != ffi::MMAL_STATUS_T::MMAL_SUCCESS {
-                return Err(MmalError::with_status(
-                    "Unable to set ISO".to_owned(),
-                    status,
-                )
-                .into());
+                return Err(MmalError::with_status("Unable to set ISO".to_owned(), status).into());
             }
 
             if self.use_encoder {
@@ -948,7 +948,8 @@ impl SeriousCamera {
     }
 
     pub fn take_async(
-        &mut self, iso: u32
+        &mut self,
+        iso: u32,
     ) -> Result<futures::channel::mpsc::Receiver<BufferGuard>, CameraError> {
         unsafe {
             self.mutex.raw().lock();
@@ -1216,7 +1217,8 @@ impl SimpleCamera {
     ///
     /// If there is an error
     pub fn take_one_writer(&mut self, writer: &mut dyn Write) -> Result<(), CameraError> {
-        let receiver = self.serious.take(iso: self.settings.unwrap().iso)?;
+        let iso = self.settings.unwrap().iso;
+        let receiver = self.serious.take(iso)?;
 
         loop {
             println!("in take_one_writer loop!");
