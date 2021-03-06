@@ -1251,7 +1251,8 @@ impl SimpleCamera {
     ///
     /// Returns a future result where `Ok` contains a `Vec<u8>` containing the bytes of the image.
     pub async fn take_one_async(&mut self) -> Result<Vec<u8>, CameraError> {
-        let receiver = self.serious.take_async()?;
+        let iso = self.settings.unwrap().iso;
+        let receiver = self.serious.take_async(iso)?;
         let future = receiver
             .fold(Vec::new(), |mut acc, buf| async move {
                 acc.extend(buf.get_bytes());
