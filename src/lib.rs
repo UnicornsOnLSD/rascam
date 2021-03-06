@@ -1179,16 +1179,6 @@ impl SimpleCamera {
 
         Ok(())
     }
-    
-    pub fn apply_settings(&mut self) -> Result<(), CameraError> {
-        let camera = &mut self.serious;
-        let settings = self.settings.as_ref().unwrap();
-        
-        println!("Setting camera num");
-        camera.set_camera_num(0)?;
-        println!("Setting camera format");
-        camera.set_camera_format(settings)
-    }
 
     /// Captures a single image from the camera synchronously and writes it to the given `Write` trait.
     ///
@@ -1236,6 +1226,11 @@ impl SimpleCamera {
             .map(Ok);
 
         future.await
+    }
+    
+    pub fn drop(&mut self) {
+        let camera = &mut self.serious;
+        camera.drop();
     }
 }
 
