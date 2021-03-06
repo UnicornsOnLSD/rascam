@@ -1182,8 +1182,9 @@ impl SimpleCamera {
     
     pub fn apply_settings(&mut self) -> Result<(), CameraError> {
         let camera = &mut self.serious;
-
         let settings = self.settings.as_ref().unwrap();
+        
+        camera.set_camera_num(0)?;
         camera.set_camera_format(settings)
     }
 
