@@ -1245,7 +1245,7 @@ impl SimpleCamera {
     }
 
     pub fn deactivate(&mut self) {
-        let camera = &mut self.serious;
+        // let camera = &mut self.serious;
 
         // camera.destroy_encoder()?;
         // unsafe {
@@ -1258,7 +1258,7 @@ impl SimpleCamera {
         //     ffi::mmal_component_destroy(camera.camera.as_ptr());
         // }
 
-        drop(camera);
+        drop(self.serious);
     }
 }
 
