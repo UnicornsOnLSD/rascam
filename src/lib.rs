@@ -851,14 +851,13 @@ impl SeriousCamera {
             //     return Err(MmalError::with_status("Unable to set ISO".to_owned(), status).into());
             // }
 
-            status = self
-                .set_camera_format(CameraSettings {
-                    width: 4056,
-                    height: 3040,
-                    encoding: MMAL_ENCODING_JPEG,
-                    ..CameraSettings::default()
-                })
-                .expect("Failed to set camera settings");
+            self.set_camera_format(CameraSettings {
+                width: 4056,
+                height: 3040,
+                encoding: MMAL_ENCODING_JPEG,
+                ..CameraSettings::default()
+            })
+            .expect("Failed to set camera settings");
 
             if self.use_encoder {
                 if !self.encoder_output_port_enabled {
