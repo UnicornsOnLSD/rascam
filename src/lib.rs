@@ -841,15 +841,24 @@ impl SeriousCamera {
                 .into());
             }
 
-            status = ffi::mmal_port_parameter_set_uint32(
-                self.camera.as_ref().control,
-                ffi::MMAL_PARAMETER_ISO as u32,
-                iso,
-            );
+            // status = ffi::mmal_port_parameter_set_uint32(
+            //     self.camera.as_ref().control,
+            //     ffi::MMAL_PARAMETER_ISO as u32,
+            //     iso,
+            // );
 
-            if status != ffi::MMAL_STATUS_T::MMAL_SUCCESS {
-                return Err(MmalError::with_status("Unable to set ISO".to_owned(), status).into());
-            }
+            // if status != ffi::MMAL_STATUS_T::MMAL_SUCCESS {
+            //     return Err(MmalError::with_status("Unable to set ISO".to_owned(), status).into());
+            // }
+
+            status = self
+                .set_camera_format(CameraSettings {
+                    width: 4056,
+                    height: 3040,
+                    encoding: MMAL_ENCODING_JPEG,
+                    ..CameraSettings::default()
+                })
+                .expect("Failed to set camera settings");
 
             if self.use_encoder {
                 if !self.encoder_output_port_enabled {
